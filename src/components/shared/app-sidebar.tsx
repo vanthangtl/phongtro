@@ -2,7 +2,6 @@ import {
   Sidebar,
   SidebarContent,
   SidebarGroup,
-  SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarTrigger,
@@ -12,12 +11,6 @@ import HeaderSidebar from "./header-sidebar";
 import {
   LayoutDashboard,
   Users,
-  Settings,
-  ShoppingBag,
-  ChevronRight,
-  FileText,
-  PieChart,
-  ShieldCheck,
   TowelRack,
   Building2,
 } from "lucide-react";

@@ -1,37 +1,30 @@
-"use client";
+import type { Metadata } from "next";
+import { Geist, Geist_Mono } from "next/font/google";
+import "./globals.css"; // Đảm bảo import CSS ở đây để cả web có style
+import DashboardLayout from "./(dashboard)/layout";
 
-import AppSidebar from "@/components/shared/app-sidebar";
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import "./globals.css"
+const geistSans = Geist({
+  variable: "--font-geist-sans",
+  subsets: ["latin"],
+});
 
-export default function DashboardLayout({
+export const metadata: Metadata = {
+  title: "My Awesome App",
+  description: "Built with Next.js 15 and Supabase",
+};
+
+export default function RootLayout({
   children,
-}: {
+}: Readonly<{
   children: React.ReactNode;
-}) {
+}>) {
   return (
     <html lang="en">
-      <body>
-        {/* Your navigation or providers go here */}
+      <body className={`${geistSans.variable} antialiased`}>
+        {/* Children ở đây chính là các Layout của từng Group 
+            ((auth)/layout.tsx hoặc (dashboard)/layout.tsx)
+        */}
         {children}
-        <SidebarProvider
-          style={
-            {
-              "--sidebar-width": "20rem",
-              "--sidebar-width-mobile": "20rem",
-            } as React.CSSProperties
-          }
-        >
-          <AppSidebar />
-          <main className="w-full">
-            <div className="flex items-center p-4 border-b">
-              <h1 className="ml-4 font-semibold text-gray-700">
-                Hệ thống quản lý phòng trọ
-              </h1>
-            </div>
-            <div className="p-6">{children}</div>
-          </main>
-        </SidebarProvider>
       </body>
     </html>
   );

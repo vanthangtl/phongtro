@@ -5,26 +5,28 @@ import {
   SidebarMenuItem,
 } from "../ui/sidebar";
 import { Biohazard } from "lucide-react";
+import Link from "next/link";
 
 export default function HeaderSidebar() {
   return (
-    <SidebarHeader className="border-b-2">
+    <SidebarHeader className="border-b">
       <SidebarMenu>
         <SidebarMenuItem>
+          {/* Sử dụng asChild với Link để tránh reload trang */}
           <SidebarMenuButton size="lg" asChild>
-            <a href="#">
-              {/* Icon Logo Header */}
+            <Link href="/" className="flex items-center gap-2 outline-none">
               <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-                {/* Thay bằng icon logo của bạn */}
-                <Biohazard className="size-4" />{" "}
+                <Biohazard className="size-4" />
               </div>
-
-              {/* Tên và sub */}
               <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-semibold">Quản lý phòng trọ</span>
-                <span className="truncate text-xs">Slogan hoặc Web App</span>
+                <span className="truncate font-semibold">
+                  Quản lý phòng trọ
+                </span>
+                <span className="truncate text-xs text-muted-foreground">
+                  v1.0.0
+                </span>
               </div>
-            </a>
+            </Link>
           </SidebarMenuButton>
         </SidebarMenuItem>
       </SidebarMenu>
