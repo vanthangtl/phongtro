@@ -44,13 +44,13 @@ export default async function RoomsPage() {
                 {Number(room.price_base).toLocaleString("vi-VN")} đ
               </TableCell>
               <TableCell>
-                <Badge
+                {/* <Badge
                   variant={
                     room.status === "AVAILABLE" ? "success" : "destructive"
                   }
                 >
                   {room.status === "AVAILABLE" ? "Trống" : "Đang ở"}
-                </Badge>
+                </Badge> */}
               </TableCell>
             </TableRow>
           ))}
