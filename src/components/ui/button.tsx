@@ -47,12 +47,9 @@ function Button({
   ...props
 }: React.ComponentProps<"button"> &
   VariantProps<typeof buttonVariants> & {
-    asChild?: boolean;
-    // Thêm dòng này để ép kiểu cho formAction chấp nhận Server Actions
-    formAction?: string | ((formData: FormData) => void | Promise<void>);
+    asChild?: boolean
   }) {
-  // Lưu ý: Shadcn bản mới thường dùng Slot.Root từ Radix
-  const Comp = asChild ? (Slot as any) : "button";
+  const Comp = asChild ? Slot.Root : "button"
 
   return (
     <Comp
@@ -62,7 +59,7 @@ function Button({
       className={cn(buttonVariants({ variant, size, className }))}
       {...props}
     />
-  );
+  )
 }
 
 export { Button, buttonVariants }

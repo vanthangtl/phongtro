@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
+import { ThemeProvider } from "@/components/theme-provider";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css"; // Đảm bảo import CSS ở đây để cả web có style
-import DashboardLayout from "./(dashboard)/layout";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -19,12 +19,18 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={`${geistSans.variable} antialiased`}>
-        {/* Children ở đây chính là các Layout của từng Group 
-            ((auth)/layout.tsx hoặc (dashboard)/layout.tsx)
-        */}
-        {children}
+    // THÊM THUỘC TÍNH NÀY VÀO ĐÂY
+    <html lang="vi" suppressHydrationWarning>
+      <head />
+      <body>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="dark"
+          enableSystem
+          disableTransitionOnChange
+        >
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   );
