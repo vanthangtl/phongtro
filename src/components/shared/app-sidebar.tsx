@@ -6,7 +6,7 @@ import {
   SidebarMenuItem,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-import FooterSidebar from "./footer-sidebar";
+import { FooterSidebar } from "./footer-sidebar";
 import HeaderSidebar from "./header-sidebar";
 import { LayoutDashboard, Users, TowelRack, Building2 } from "lucide-react";
 import Link from "next/link";
