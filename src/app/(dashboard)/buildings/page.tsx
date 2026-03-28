@@ -1,29 +1,56 @@
+import { columns, Building } from "./columns";
+import { DataTable } from "./data-table";
 import { createClient } from "@/utils/supabase/server";
+import { AddBuildingDialog } from "./add-building-dialog";
 
-export default async function BuildingsPage() {
+async function getData(): Promise<Building[]> {
   const supabase = await createClient();
 
-  // Lấy dữ liệu từ bảng buildings
-  const { data, error } = await supabase
+  // Lấy dữ liệu tòa nhà kèm theo danh sách phòng
+  const { data: buildings, error } = await supabase
     .from("buildings")
-    .select("*");
+    .select(`
+      id,
+      name,
+      address,
+      rooms (
+        status
+      )
+    `);
 
-  console.log(data)
+  if (error) {
+    console.error("Lỗi khi lấy dữ liệu:", error);
+    return [];
+  }
 
-  if (error) return <div>Đã xảy ra lỗi khi tải dữ liệu.</div>;
+  // Chuyển đổi dữ liệu để phù hợp với interface Building
+  return buildings.map((building: any) => {
+    const rooms = building.rooms || [];
+    const totalRoom = rooms.length;
+    const emptyRoom = rooms.filter((r: any) => r.status === "AVAILABLE").length;
+    const tenantRoom = rooms.filter((r: any) => r.status === "OCCUPIED").length;
+
+    return {
+      id: building.id,
+      name: building.name || "Chưa có tên",
+      address: building.address || "Chưa có địa chỉ",
+      totalRoom,
+      emptyRoom,
+      tenantRoom,
+    };
+  });
+}
+
+export default async function BuildingPage() {
+  const data = await getData();
 
   return (
-    <div className="p-8">
-      <h1 className="text-2xl font-bold mb-4">Danh sách tòa nhà</h1>
-      <div className="grid gap-4">
-        {data?.map((item) => (
-          <div key={item.id} className="p-4 border rounded-lg shadow-sm">
-            <h2 className="font-semibold text-lg">{item.name}</h2>
-            <p className="text-gray-500">{item.address}</p>
-          </div>
-        ))}
-        {data?.length === 0 && <p>Chưa có tòa nhà nào được tạo.</p>}
+    <div className="container mx-auto py-10">
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-2xl font-bold">Danh sách toà nhà</h1>
+        <AddBuildingDialog />
       </div>
+      <DataTable columns={columns} data={data} />
     </div>
   );
 }

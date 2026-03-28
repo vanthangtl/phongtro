@@ -10,7 +10,6 @@ import FooterSidebar from "./footer-sidebar";
 import HeaderSidebar from "./header-sidebar";
 import { LayoutDashboard, Users, TowelRack, Building2 } from "lucide-react";
 import Link from "next/link";
-import { ModeToggle } from "../DarkMode";
 
 const navMain = [
   { name: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
@@ -29,10 +28,7 @@ export default function AppSidebar() {
         <SidebarGroup />
         {navMain.map((item) => (
           <SidebarMenuItem className="pl-2 pr-2 list-none" key={item.name}>
-            <SidebarMenuButton
-              className="hover:bg-red-800 hover:text-white"
-              asChild
-            >
+            <SidebarMenuButton asChild>
               <Link href={item.url}>
                 <div className="flex justify-center items-center size-8">
                   <item.icon className="size-4" />
@@ -47,7 +43,6 @@ export default function AppSidebar() {
         <SidebarGroup />
       </SidebarContent>
 
-      <ModeToggle />
       <SidebarTrigger />
 
       {/* Footer */}

@@ -1,61 +1,58 @@
+import { columns, Room } from "./columns";
+import { DataTable } from "./data-table";
 import { createClient } from "@/utils/supabase/server";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
+import { AddRoomDialog } from "./add-room-dialog";
 
-export default async function RoomsPage() {
+async function getData(): Promise<Room[]> {
   const supabase = await createClient();
 
-  // Lấy dữ liệu phòng và thông tin tòa nhà đi kèm
-  const { data: rooms } = await supabase
+  // Load rooms with their joined buildings
+  const { data: rooms, error } = await supabase
     .from("rooms")
-    .select("*, buildings(name)");
+    .select(`
+      id,
+      room_number,
+      price,
+      status,
+      building_id,
+      buildings (
+        name
+      )
+    `);
+
+  if (error) {
+    console.error("Lỗi khi lấy dữ liệu phòng:", error);
+    return [];
+  }
+
+  return rooms.map((room: any) => ({
+    id: room.id,
+    roomNumber: room.room_number || "Chưa có",
+    price: room.price || 0,
+    status: room.status || "AVAILABLE",
+    buildingId: room.building_id,
+    buildingName: room.buildings?.name || "N/A",
+    occupants: 0, // Mock current_occupants as 0 for now until tenants table is established
+  }));
+}
+
+async function getBuildings() {
+  const supabase = await createClient();
+  const { data } = await supabase.from("buildings").select("id, name");
+  return data || [];
+}
+
+export default async function RoomsPage() {
+  const data = await getData();
+  const buildingsList = await getBuildings();
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold">Quản lý Phòng</h2>
-        <button className="bg-primary text-white px-4 py-2 rounded-md">
-          Thêm phòng mới
-        </button>
+    <div className="container mx-auto py-10">
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-2xl font-bold">Danh sách Phòng Trọ</h1>
+        <AddRoomDialog buildings={buildingsList} />
       </div>
-
-      <Table className="border rounded-md">
-        <TableHeader>
-          <TableRow>
-            <TableHead>Số phòng</TableHead>
-            <TableHead>Tòa nhà</TableHead>
-            <TableHead>Giá thuê</TableHead>
-            <TableHead>Trạng thái</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {rooms?.map((room) => (
-            <TableRow key={room.id}>
-              <TableCell className="font-medium">{room.room_number}</TableCell>
-              <TableCell>{room.buildings?.name}</TableCell>
-              <TableCell>
-                {Number(room.price_base).toLocaleString("vi-VN")} đ
-              </TableCell>
-              <TableCell>
-                {/* <Badge
-                  variant={
-                    room.status === "AVAILABLE" ? "success" : "destructive"
-                  }
-                >
-                  {room.status === "AVAILABLE" ? "Trống" : "Đang ở"}
-                </Badge> */}
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+      <DataTable columns={columns} data={data} buildings={buildingsList} />
     </div>
   );
 }

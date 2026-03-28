@@ -1,6 +1,5 @@
 "use client";
 
-// (Thành phần phía máy khách) sẽ chứa <DataTable />thành phần của chúng ta.
 import * as React from "react";
 import {
   ColumnDef,
@@ -9,6 +8,7 @@ import {
   flexRender,
   getCoreRowModel,
   getSortedRowModel,
+  getPaginationRowModel,
   useReactTable,
 } from "@tanstack/react-table";
 
@@ -32,47 +32,61 @@ import { Button } from "@/components/ui/button";
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
+  buildings?: any[];
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
+  buildings,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
+  const [rowSelection, setRowSelection] = React.useState({});
 
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
     onSortingChange: setSorting,
     getSortedRowModel: getSortedRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
+    onRowSelectionChange: setRowSelection,
     state: {
       sorting,
+      rowSelection,
       columnVisibility,
+    },
+    meta: {
+      buildings: buildings || [],
     },
   });
 
   return (
     <div>
       <div className="flex items-center py-4">
-        <div>
-            
-        </div>
-
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="ml-auto">
-              Columns
+              Bộ lọc
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
+          <DropdownMenuContent align="end" className="w-45">
             {table
               .getAllColumns()
               .filter((column) => column.getCanHide())
               .map((column) => {
+                const columnLabels: Record<string, string> = {
+                  roomNumber: "Số phòng",
+                  buildingName: "Toà nhà",
+                  status: "Trạng thái",
+                  price: "Giá phòng",
+                  occupants: "Người ở",
+                  actions: "Hành động",
+                };
+
                 return (
                   <DropdownMenuCheckboxItem
                     key={column.id}
@@ -82,7 +96,7 @@ export function DataTable<TData, TValue>({
                       column.toggleVisibility(!!value)
                     }
                   >
-                    {column.id}
+                    {columnLabels[column.id] || column.id}
                   </DropdownMenuCheckboxItem>
                 );
               })}
@@ -132,12 +146,30 @@ export function DataTable<TData, TValue>({
                   colSpan={columns.length}
                   className="h-24 text-center"
                 >
-                  No results.
+                  Không tìm thấy phòng nào.
                 </TableCell>
               </TableRow>
             )}
           </TableBody>
         </Table>
+      </div>
+      <div className="flex items-center justify-end space-x-2 py-4">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => table.previousPage()}
+          disabled={!table.getCanPreviousPage()}
+        >
+          Trước
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => table.nextPage()}
+          disabled={!table.getCanNextPage()}
+        >
+          Sau
+        </Button>
       </div>
     </div>
   );

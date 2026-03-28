@@ -35,13 +35,23 @@ export default async function updateSession(request: NextRequest) {
   } = await supabase.auth.getUser();
 
   // LOGIC BẢO VỆ ROUTE:
-  // Nếu chưa đăng nhập và không phải đang ở trang /login, hãy chuyển về /login
-  if (
-    !user &&
-    !request.nextUrl.pathname.startsWith("/login")
-  ) {
+  const currentPath = request.nextUrl.pathname;
+  // Danh sách các URL công khai không yêu cầu phải đăng nhập
+  const publicRoutes = ["/login", "/auth/callback"];
+
+  const isPublicRoute = publicRoutes.some((route) => currentPath.startsWith(route));
+
+  // 1. Nếu CHƯA đăng nhập và KHÔNG ở route công khai -> Đá về /login
+  if (!user && !isPublicRoute) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
+    return NextResponse.redirect(url);
+  }
+
+  // 2. Nếu ĐÃ đăng nhập và đang ở các route công khai (vd: /login) -> Đá về Trang chủ
+  if (user && isPublicRoute) {
+    const url = request.nextUrl.clone();
+    url.pathname = "/";
     return NextResponse.redirect(url);
   }
 
