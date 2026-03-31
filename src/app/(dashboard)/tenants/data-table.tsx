@@ -9,11 +9,7 @@ import {
   getCoreRowModel,
   getSortedRowModel,
   getPaginationRowModel,
-  getFilteredRowModel,
   useReactTable,
-  getFacetedRowModel,
-  getFacetedUniqueValues,
-  ColumnFiltersState,
 } from "@tanstack/react-table";
 
 import {
@@ -32,22 +28,19 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { X } from "lucide-react";
-import { DataTableFacetedFilter } from "./data-table-faceted-filter";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
-  buildings?: any[];
+  rooms?: any[];
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
-  buildings,
+  rooms,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
@@ -61,48 +54,19 @@ export function DataTable<TData, TValue>({
     getSortedRowModel: getSortedRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
-    onColumnFiltersChange: setColumnFilters,
-    getFilteredRowModel: getFilteredRowModel(),
-    getFacetedRowModel: getFacetedRowModel(),
-    getFacetedUniqueValues: getFacetedUniqueValues(),
     state: {
       sorting,
-      columnFilters,
       rowSelection,
       columnVisibility,
     },
     meta: {
-      buildings: buildings || [],
+      rooms: rooms || [],
     },
   });
 
   return (
     <div>
       <div className="flex items-center py-4">
-        <div className="flex flex-1 items-center space-x-2">
-          {table.getColumn("status") && (
-            <DataTableFacetedFilter
-              column={table.getColumn("status")}
-              title="Status"
-              options={[
-                { label: "Phòng trống", value: "AVAILABLE" },
-                { label: "Đã thuê", value: "OCCUPIED" },
-                { label: "Đã cọc", value: "DEPOSITED" },
-                { label: "Bảo trì", value: "MAINTENANCE" },
-              ]}
-            />
-          )}
-          {table.getState().columnFilters.length > 0 && (
-            <Button
-              variant="ghost"
-              onClick={() => table.resetColumnFilters()}
-              className="h-8 px-2 lg:px-3"
-            >
-              Reset
-              <X className="ml-2 h-4 w-4" />
-            </Button>
-          )}
-        </div>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="ml-auto">
@@ -115,11 +79,11 @@ export function DataTable<TData, TValue>({
               .filter((column) => column.getCanHide())
               .map((column) => {
                 const columnLabels: Record<string, string> = {
-                  roomNumber: "Số phòng",
-                  buildingName: "Toà nhà",
-                  status: "Trạng thái",
-                  price: "Giá phòng",
-                  occupants: "Người ở",
+                  name: "Tên khách",
+                  phone: "Số điện thoại",
+                  email: "Email",
+                  roomName: "Phòng",
+                  startDate: "Ngày bắt đầu",
                   actions: "Hành động",
                 };
 
@@ -182,7 +146,7 @@ export function DataTable<TData, TValue>({
                   colSpan={columns.length}
                   className="h-24 text-center"
                 >
-                  Không tìm thấy phòng nào.
+                  Không tìm thấy khách nào.
                 </TableCell>
               </TableRow>
             )}

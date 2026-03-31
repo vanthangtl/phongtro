@@ -6,7 +6,7 @@ import { AddRoomDialog } from "./add-room-dialog";
 async function getData(): Promise<Room[]> {
   const supabase = await createClient();
 
-  // Load rooms with their joined buildings
+  // Load rooms with their joined buildings and tenants count
   const { data: rooms, error } = await supabase
     .from("rooms")
     .select(`
@@ -17,6 +17,9 @@ async function getData(): Promise<Room[]> {
       building_id,
       buildings (
         name
+      ),
+      tenants (
+        id
       )
     `);
 
@@ -32,7 +35,7 @@ async function getData(): Promise<Room[]> {
     status: room.status || "AVAILABLE",
     buildingId: room.building_id,
     buildingName: room.buildings?.name || "N/A",
-    occupants: 0, // Mock current_occupants as 0 for now until tenants table is established
+    occupants: room.tenants ? room.tenants.length : 0,
   }));
 }
 

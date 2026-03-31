@@ -50,21 +50,12 @@ export const columns: ColumnDef<Room>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: "roomNumber",
-    header: "Số phòng",
-  },
-  {
     accessorKey: "buildingName",
     header: "Toà nhà",
   },
   {
-    accessorKey: "status",
-    header: "Trạng thái",
-    cell: ({ row }) => {
-      const status = row.getValue("status") as string;
-      const config = statusConfig[status] || { label: status, variant: "default" };
-      return <Badge variant={config.variant as any}>{config.label}</Badge>;
-    }
+    accessorKey: "roomNumber",
+    header: "Số phòng",
   },
   {
     accessorKey: "price",
@@ -90,7 +81,21 @@ export const columns: ColumnDef<Room>[] = [
   },
   {
     accessorKey: "occupants",
-    header: "SL Khách ở",
+    header: "SL Khách",
+  },
+  {
+    accessorKey: "status",
+    header: "Trạng thái",
+    cell: ({ row }) => {
+      const status = row.getValue("status") as string;
+      const config = statusConfig[status] || { label: status, variant: "default" };
+      return <Badge variant={config.variant as any}>{config.label}</Badge>;
+    },
+    filterFn: (row, id, filterValues: string[]) => {
+      // If array is empty or undefined, it means no filter is applied (show all)
+      if (!filterValues || filterValues.length === 0) return true;
+      return filterValues.includes(row.getValue(id));
+    },
   },
   {
     id: "actions",
